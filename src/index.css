@@ -1,0 +1,99 @@
+
+.image-grid {
+  columns: 3;
+  column-gap: 20px;
+}
+
+.image-card {
+  break-inside: avoid;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: white;
+}
+
+.image-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: pointer;
+}
+
+.image-card h2 {
+  padding: 12px;
+  font-size: 15px;
+}
+
+/* Modal background */
+.preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.85);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Fixed-size preview */
+.preview-content {
+  position: relative;
+  width: 700px;
+  height: 500px;
+  max-width: 90vw;
+  max-height: 85vh;
+
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Image stays inside preview */
+.preview-content img {
+  width: 100%;
+  height: 0;
+  flex: 1;
+  min-height: 0;
+  object-fit: contain;
+}
+
+/* Image name */
+.preview-content h2 {
+  flex-shrink: 0;
+  margin-top: 10px;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+/* Close button */
+.close-button {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 35px;
+  height: 35px;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .image-grid {
+    columns: 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .image-grid {
+    columns: 1;
+  }
+}
