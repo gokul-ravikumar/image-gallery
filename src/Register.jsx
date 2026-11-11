@@ -71,7 +71,7 @@ function Register({ onSwitchToLogin }) {
               id="register-name"
               className="auth-input"
               type="text"
-              placeholder="Jane Doe"
+              placeholder="your name"
               autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
