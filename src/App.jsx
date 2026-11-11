@@ -1,85 +1,61 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { request } from "./api.js";
+import Login from "./Login.jsx";
+import Register from "./Register.jsx";
+import Gallery from "./Gallery.jsx";
 
 function App() {
-  const [images, setImages] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [user, setUser] = useState(null);
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [view, setView] = useState("login"); // "login" | "register"
+  const [notice, setNotice] = useState("");
 
-  function handleImageChange(event) {
-    const files = Array.from(event.target.files);
+  // On page load, ask the backend who we are. If the JWT cookie is still
+  // valid, /auth/me returns the user and we stay logged in after a refresh.
+  useEffect(() => {
+    request("/auth/me")
+      .then((data) => setUser(data.user))
+      .catch(() => setUser(null))
+      .finally(() => setCheckingSession(false));
+  }, []);
 
-    const newImages = files.map((file) => {
-      const url = URL.createObjectURL(file);
+  if (checkingSession) {
+    return <p>Loading...</p>;
+  }
 
-      return {
-        id: crypto.randomUUID(),
-        url: url,
-        name: file.name,
-      };
-    });
+  if (user) {
+    return (
+      <Gallery
+        user={user}
+        onLogout={() => {
+          setUser(null);
+          setNotice("");
+          setView("login");
+        }}
+      />
+    );
+  }
 
-    setImages((previousImages) => {
-      previousImages.forEach((image) => {
-        URL.revokeObjectURL(image.url);
-      });
-
-      return newImages;
-    });
-
-    setSelectedImage(null);
-    event.target.value = "";
+  if (view === "register") {
+    return (
+      <Register
+        onSwitchToLogin={(message) => {
+          setNotice(message);
+          setView("login");
+        }}
+      />
+    );
   }
 
   return (
-    <main className="gallery">
-      <h1>Image Gallery</h1>
-
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleImageChange}
-      />
-
-      <div className="image-grid">
-        {images.map((image) => (
-          <article className="image-card" key={image.id}>
-            <img
-              src={image.url}
-              alt={image.name}
-              onClick={() => setSelectedImage(image)}
-            />
-          </article>
-        ))}
-      </div>
-
-      {/* Modal is outside image-grid */}
-      {selectedImage && (
-        <div
-          className="preview-overlay"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div
-            className="preview-content"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button
-              className="close-button"
-              onClick={() => setSelectedImage(null)}
-            >
-              &times;
-            </button>
-
-            <img
-              src={selectedImage.url}
-              alt={selectedImage.name}
-            />
-
-            <h2>{selectedImage.name}</h2>
-          </div>
-        </div>
-      )}
-    </main>
+    <Login
+      notice={notice}
+      onLogin={(loggedInUser) => setUser(loggedInUser)} // "redirect" to gallery
+      onSwitchToRegister={() => {
+        setNotice("");
+        setView("register");
+      }}
+    />
   );
 }
 
